@@ -2,7 +2,7 @@
 from model.contact import Contact
 
 
-def test_modify_contact(app):
+def test_modify_first_contact(app):
     app.session.login(username="admin", password="secret")
     app.contact.create(Contact(firstname="TEST1", middlename="TEST1", lastname="TEST1", nickname="TEST1", title="TEST1",
                                company="TEST1", address="TEST1", home="TEST1", mobile="TEST1", work="TEST1", fax="TEST1",
