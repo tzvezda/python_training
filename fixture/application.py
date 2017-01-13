@@ -13,7 +13,6 @@ class Application:
         profile.set_preference("browser.startup.homepage_override.mstone", "ignore")
         self.wd = WebDriver(firefox_profile= profile)
         #self.wd = WebDriver()
-        self.wd.implicitly_wait(5)
         self.session = SessionHelper(self)
         self.group = GroupHelper(self)
         self.contact = ContactHelper(self)
@@ -27,8 +26,8 @@ class Application:
 
     def open_home_page(self):
         wd = self.wd
-        # open homepage
-        wd.get("http://localhost/addressbook/")
+        if not wd.current_url.endswith("/addressbook/"):
+            wd.get("http://localhost/addressbook/")
 
 
     def destroy(self):
