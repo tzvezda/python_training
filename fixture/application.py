@@ -13,7 +13,7 @@ class Application:
         profile.set_preference("browser.startup.homepage_override.mstone", "ignore")
         self.wd = WebDriver(firefox_profile= profile)
         #self.wd = WebDriver()
-        self.wd.implicitly_wait(60)
+        self.wd.implicitly_wait(5)
         self.session = SessionHelper(self)
         self.group = GroupHelper(self)
         self.contact = ContactHelper(self)
