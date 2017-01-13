@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 from fixture.session import SessionHelper
 from fixture.group import GroupHelper
 from fixture.contact import ContactHelper
@@ -8,7 +9,10 @@ from fixture.contact import ContactHelper
 class Application:
 
     def __init__(self):
-        self.wd = WebDriver()
+        profile = FirefoxProfile()
+        profile.set_preference("browser.startup.homepage_override.mstone", "ignore")
+        self.wd = WebDriver(firefox_profile= profile)
+        #self.wd = WebDriver()
         self.wd.implicitly_wait(60)
         self.session = SessionHelper(self)
         self.group = GroupHelper(self)
