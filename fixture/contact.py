@@ -12,8 +12,12 @@ class ContactHelper:
         wd.find_element_by_link_text("add new").click()
         self.fill_contact_form(contact)
         # submit contact form
-        wd.find_element_by_xpath("//div[@id='content']/form/input[21]").click()
+        self.submit_contact_creation()
         self.contact_cache = None
+
+    def submit_contact_creation(self):
+        wd = self.app.wd
+        wd.find_element_by_name("submit").click()
 
     def delete_first_contact(self):
         self.delete_contact_by_index(0)
@@ -22,30 +26,50 @@ class ContactHelper:
         wd = self.app.wd
         self.app.open_home_page()
         self.select_contact_by_index(index)
-        # submit deletion of first contact
-        wd.find_element_by_xpath("//div[@id='content']/form[2]/div[2]/input").click()
+        self.submit_contact_deletion()
         wd.switch_to_alert().accept()
         self.app.open_home_page()
         self.contact_cache = None
+
+    def submit_contact_deletion(self):
+        wd = self.app.wd
+        wd.find_element_by_xpath("//input[@value=\"Delete\"]").click()
 
     def select_contact_by_index(self, index):
         wd = self.app.wd
         wd.find_elements_by_name("selected[]")[index].click()
 
-    def modify_first_contact(self):
-        self.modify_contact_by_index(0)
+    def modify_first_contact(self, contact):
+        self.modify_contact_by_index(0, contact)
 
     def modify_contact_by_index(self, index, contact):
         wd = self.app.wd
         self.app.open_home_page()
-        # open contact by index for editing
-        wd.find_element_by_xpath("//table[@id='maintable']/tbody/tr["+str(index+2)+"]/td[8]/a/img").click()
+        self.open_contact_to_edit_by_index(index)
         # edit contact form
         self.fill_contact_form(contact)
-        # submit modification
-        wd.find_element_by_xpath("//div[@id='content']/form[1]/input[22]").click()
+        self.submit_contact_modification()
         self.return_to_home_page()
         self.contact_cache = None
+
+    def submit_contact_modification(self):
+        wd = self.app.wd
+        wd.find_element_by_xpath("//input[@value=\"Update\"]").click()
+
+
+    def open_contact_to_edit_by_index(self, index):
+        wd = self.app.wd
+        self.app.open_home_page()
+        row = wd.find_elements_by_name("entry")[index]
+        cell = row.find_elements_by_tag_name("td")[7]
+        cell.find_element_by_tag_name("a").click()
+
+    def open_contact_view_by_index(self, index):
+        wd = self.app.wd
+        self.app.open_home_page()
+        row = wd.find_elements_by_name("entry")[index]
+        cell = row.find_elements_by_tag_name("td")[6]
+        cell.find_element_by_tag_name("a").click()
 
     def fill_contact_form(self, contact):
         wd = self.app.wd
@@ -64,11 +88,11 @@ class ContactHelper:
         self.change_field_value("email2", contact.email2)
         self.change_field_value("email3", contact.email3)
         self.change_field_value("homepage", contact.homepage)
-        self.change_day_field_value("//div[@id='content']/form/select[1]//option[%s]", contact.bday)
-        self.change_month_field_value("//div[@id='content']/form/select[2]//option[%s]", contact.bmonth)
+        self.change_day_field_value("bday", contact.bday)
+        self.change_month_field_value("bmonth", contact.bmonth)
         self.change_field_value("byear", contact.byear)
-        self.change_day_field_value("//div[@id='content']/form/select[3]//option[%s]", contact.aday)
-        self.change_month_field_value("//div[@id='content']/form/select[4]//option[%s]", contact.amonth)
+        self.change_day_field_value("aday", contact.aday)
+        self.change_month_field_value("amonth", contact.amonth)
         self.change_field_value("ayear", contact.ayear)
         self.change_field_value("address2", contact.address2)
         self.change_field_value("phone2", contact.phone2)
@@ -81,21 +105,17 @@ class ContactHelper:
             wd.find_element_by_name(field_name).clear()
             wd.find_element_by_name(field_name).send_keys(text)
 
-    def change_month_field_value(self, xpath, month):
+    def change_month_field_value(self, month_name, month):
         wd = self.app.wd
         if month is not None:
-            if not wd.find_element_by_xpath(
-                        xpath % str(int(month) + 1)).is_selected():
-                wd.find_element_by_xpath(
-                    xpath % str(int(month) + 1)).click()
+            element = wd.find_element_by_name(month_name)
+            element.find_element_by_xpath("option[%s]" % str(int(month) + 1)).click()
 
-    def change_day_field_value(self, xpath, day):
+    def change_day_field_value(self, day_name, day):
         wd = self.app.wd
         if day is not None:
-            if not wd.find_element_by_xpath(
-                            xpath % str(int(day) + 2)).is_selected():
-                wd.find_element_by_xpath(
-                    xpath % str(int(day) + 2)).click()
+            element = wd.find_element_by_name(day_name)
+            element.find_element_by_xpath("option[%s]" % str(int(day) + 2)).click()
 
     def return_to_home_page(self):
         wd = self.app.wd
@@ -114,9 +134,10 @@ class ContactHelper:
             wd = self.app.wd
             self.app.open_home_page()
             self.contact_cache = []
-            for element in wd.find_elements_by_css_selector("tr[name=\"entry\"]"):
-               firstname = element.find_element_by_xpath("td[3]").text
-               lastname = element.find_element_by_xpath("td[2]").text
-               id = element.find_element_by_name("selected[]").get_attribute("value")
+            for row in wd.find_elements_by_name("entry"):
+               cells = row.find_elements_by_tag_name("td")
+               firstname = cells[2].text
+               lastname = cells[1].text
+               id = cells[0].find_element_by_tag_name("input").get_attribute("id")
                self.contact_cache.append(Contact(firstname=firstname, lastname = lastname, id=id))
         return self.contact_cache
