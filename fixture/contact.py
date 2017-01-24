@@ -1,4 +1,5 @@
 from model.contact import Contact
+import re
 
 class ContactHelper:
 
@@ -11,7 +12,6 @@ class ContactHelper:
         # init contact creation
         wd.find_element_by_link_text("add new").click()
         self.fill_contact_form(contact)
-        # submit contact form
         self.submit_contact_creation()
         self.contact_cache = None
 
@@ -139,5 +139,34 @@ class ContactHelper:
                firstname = cells[2].text
                lastname = cells[1].text
                id = cells[0].find_element_by_tag_name("input").get_attribute("id")
-               self.contact_cache.append(Contact(firstname=firstname, lastname = lastname, id=id))
-        return self.contact_cache
+               all_phones = cells[5].text
+               self.contact_cache.append(Contact(firstname=firstname, lastname = lastname, id=id,
+                                                 all_phones_from_home_page=all_phones))
+        return list(self.contact_cache)
+
+    def get_contact_info_from_edit_page(self, index):
+        wd = self.app.wd
+        self.open_contact_to_edit_by_index(index)
+        firstname = wd.find_element_by_name("firstname").get_attribute("value")
+        lastname = wd.find_element_by_name("lastname").get_attribute("value")
+        id = wd.find_element_by_name("id").get_attribute("value")
+        homephone = wd.find_element_by_name("home").get_attribute("value")
+        workphone = wd.find_element_by_name("work").get_attribute("value")
+        mobilephone = wd.find_element_by_name("mobile").get_attribute("value")
+        secondaryphone = wd.find_element_by_name("phone2").get_attribute("value")
+        return Contact(firstname=firstname, lastname=lastname, id=id, homephone=homephone,
+                       mobilephone=mobilephone, workphone=workphone, secondaryphone=secondaryphone)
+
+    def get_contact_info_from_view_page(self, index):
+        wd = self.app.wd
+        self.open_contact_view_by_index(index)
+        text = wd.find_element_by_id("content").text
+        homephone = re.search("H: (.*)", text).group(1)
+        workphone = re.search("W: (.*)", text).group(1)
+        mobilephone = re.search("M: (.*)", text).group(1)
+        secondaryphone = re.search("P: (.*)", text).group(1)
+        return Contact(homephone=homephone, mobilephone=mobilephone, workphone=workphone, secondaryphone=secondaryphone)
+
+
+
+
