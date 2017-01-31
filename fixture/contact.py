@@ -80,9 +80,9 @@ class ContactHelper:
         self.change_field_value("title", contact.title)
         self.change_field_value("company", contact.company)
         self.change_field_value("address", contact.address)
-        self.change_field_value("home", contact.home)
-        self.change_field_value("mobile", contact.mobile)
-        self.change_field_value("work", contact.work)
+        self.change_field_value("home", contact.homephone)
+        self.change_field_value("mobile", contact.mobilephone)
+        self.change_field_value("work", contact.workphone)
         self.change_field_value("fax", contact.fax)
         self.change_field_value("email", contact.email)
         self.change_field_value("email2", contact.email2)
@@ -95,7 +95,7 @@ class ContactHelper:
         self.change_month_field_value("amonth", contact.amonth)
         self.change_field_value("ayear", contact.ayear)
         self.change_field_value("address2", contact.address2)
-        self.change_field_value("phone2", contact.phone2)
+        self.change_field_value("phone2", contact.secondaryphone)
         self.change_field_value("notes", contact.notes)
 
     def change_field_value(self, field_name, text):

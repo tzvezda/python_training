@@ -48,3 +48,16 @@ class Contact:
             return int(self.id)
         else:
             return maxsize
+
+    def print_contact(contact):
+        return print(
+            "firstname =" + contact.firstname + "; middlename = " + contact.middlename + "; lastname = " + contact.lastname +
+            "; nickname = " + contact.nickname + "; title = " + contact.title + "; company = " + contact.company +
+            "; address = " + contact.address + "; homephone = " + contact.homephone + "; mobilephone = " +
+            contact.mobilephone + "; workphone = " + contact.workphone + "; fax = " + contact.fax + "; email = " +
+            contact.email + "; email2 = " + contact.email2 + "; email3 = " + contact.email3 + "; homepage = " +
+            contact.homepage + "; bday = " + str(contact.bday) + "; bmonth = " + str(contact.bmonth) + "; byear = " +
+            str(contact.byear) + "; aday = " + str(contact.aday) + "; amonth = " + str(
+                contact.amonth) + "; ayear = " + str(contact.ayear) +
+            "; address2 = " + contact.address2 + "; secondaryphone = " + contact.secondaryphone +
+            "; notes = " + contact.notes)
